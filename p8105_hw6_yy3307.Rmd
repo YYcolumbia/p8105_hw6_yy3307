@@ -6,26 +6,30 @@ date: "2022-11-29"
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-library(rvest)
-library(viridis)
-library(purrr)
-library(patchwork)
-
-knitr::opts_chunk$set(
-	echo = TRUE,
-	warning = FALSE,
-	fig.width = 8, 
-  fig.height = 6,
-  out.width = "90%"
-)
-
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-
-scale_colour_discrete = scale_colour_viridis_d
-scale_fill_discrete = scale_fill_viridis_d
-
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
+library(modelr)
+library(mgcv)
 ```
+
+## Problem 1
+
+
+## Problem 2
+
+First we need to import and clean the `homicide` dataset. Then I'm going to `mutate` a `city_state` variable to combine `city` and `state`, with a binary variable indicating whether the homicide is solved. The next step is to `filter` out multiple `city_state` which are not valid under our condition.
+
+```{r}
+homicide_raw = 
+  read.csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(city_state = str_c(city, ", ", state)) %>% 
+  filter(
+    city_state != "Dallas, TX", 
+    city_state != "Phoenix, AZ", 
+    city_state != "Kansas City, MO", 
+    city_state != "Tulsa, AL"
+  )
+```
+
+
+## Problem 3
+
