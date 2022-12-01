@@ -7,7 +7,6 @@ date: "2022-11-29"
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(modelr)
-library(mgcv)
 ```
 
 ## Problem 1
@@ -102,24 +101,22 @@ From the plot we can analyze that the range for City OR Solving Homicides Compar
 
 ## Problem 3
 
-The first step is to load and clean the data for regression analysis, we need to convert numeric to factor and check for missing data. I would change the numeric to the corresponding expression first using `recode`, so that I can more directly recognize the representation. Then we can use `as.factor` to change them into factors.
+The first step is to load and clean the data for regression analysis, we need to convert numeric to factor and check for missing data. I would use `as.factor` to change the numerics into factors.
 
-```{r}
-birthweight_raw = 
-  read.csv("data/birthweight.csv") %>% 
-  janitor::clean_names() %>% 
+```{r, message = FALSE}
+birthweight_raw =
+  read_csv("data/birthweight.csv") %>% 
+  janitor::clean_names() %>%
+  drop_na() %>% 
   mutate(
-    babysex = recode(babysex, `1` = "male", `2` = "female"),
-    frace = recode(frace, `1` = "White", `2` = "Black", `3` = "Asian", `4` = "Puerto Rican", `8` = "Other", `9` = "Unknown"),
-    malform = recode(malform, `0` = "absent", `1` = "present"),
-    mrace = recode(mrace, `1` = "White", `2` = "Black", `3` = "Asian", `4` = "Puerto Rican", `8` = "Other"),
-    
     babysex = as.factor(babysex),
     frace = as.factor(frace),
     malform = as.factor(malform),
     mrace = as.factor(mrace)
   ) %>% 
-  drop_na()
+  select(bwt, everything())
+
+birthweight_raw
 ```
 
 Before making a regression model for birthweight, we need to decide which variables are necessay and important for model hypothesis testing. We can first fit regression using all predictors and select variables using `backward` elimination to help us make valid selections.
@@ -134,17 +131,26 @@ step(mult_fit, direction = 'backward')
 From the result shown above, I'm going to select `bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken` as hypothesis testing variables and propose a regression model for birthweight based on these variables.
 
 ```{r}
-bwt_model =
-  lm(formula = bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, data = birthweight_raw) %>% 
-  broom::tidy() %>% 
-  knitr::kable(digits = 3)
+model_final =
+  lm(bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, data = birthweight_raw)
 
-bwt_model
+model_final %>% 
+  broom::tidy()
 ```
 
 After getting the fitted model for birthweight, we can make a plot of model residuals against fitted values.
 
 ```{r}
-
+birthweight_raw %>% 
+  add_residuals(model_final) %>% 
+  add_predictions(model_final) %>% 
+  ggplot(aes(x = pred, y = resid)) +
+  geom_point() +
+  labs(
+    title = "Model Residuals Against Fitted Values",
+    x = "Fitted value",
+    y = "Residuals"
+  ) +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
