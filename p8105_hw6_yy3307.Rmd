@@ -47,15 +47,34 @@ baltimore_logistic =
   broom::tidy() %>% 
   mutate(
     OR = exp(estimate),
-    CI_upper = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error),
     CI_lower = exp(estimate - 1.96 * std.error)
   ) %>% 
-  select(term, log_OR = estimate, OR, CI_lower, CI_upper) %>% 
+  select(term, OR, CI_lower, CI_upper) %>% 
   knitr::kable(digits = 3)
 
 baltimore_logistic
 ```
 
+Now we are going to run the same process for each cities and extract corresponding odds ratio and CI, but this time we will do it with a tidy pipeline using `nest`, `unnest`, and `map`.
+
+```{r}
+cities_logistic =
+  homicide_raw %>% 
+  nest(data = -city_state) %>% 
+  mutate(
+    models = map(data, ~glm(solve_binary ~ victim_age + victim_sex + victim_race, data = .x, family = binomial())),
+    results = map(models, broom::tidy)) %>% 
+  select(city_state, results) %>% 
+  unnest(results) %>% 
+  filter(term == "victim_sexMale") %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_upper = exp(estimate + 1.96 * std.error),
+    CI_lower = exp(estimate - 1.96 * std.error)
+  ) %>% 
+  select(city_state, term, OR, CI_lower, CI_upper)
+```
 
 ## Problem 3
 
