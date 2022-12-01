@@ -98,7 +98,15 @@ city_plot =
 city_plot
 ```
 
-From the plot we can analyze that the range for City OR Solving Homicides Comparing Male Victims to Female Victims is from about 0.25 to 1.75. New York, NY has the lowest odds ratio and Albuquerque, NM has the highest odds ratio. We can also tell that the confidence interval for each city does not follows a specific increasing trend, some cities may have low OR with long CI and some may have high OR with shortter CI.
+From the plot we can analyze that the range for City OR Solving Homicides Comparing Male Victims to Female Victims is from about 0.25 to 1.75. Generally odds ratio for most of the cities falls below 1. New York, NY has the lowest odds ratio and Albuquerque, NM has the highest odds ratio. We can also tell that the confidence interval for each city does not follows a specific increasing trend, some cities may have low OR with long CI and some may have high OR with shortter CI.
 
 ## Problem 3
+
+The first step is to load and clean the data for regression analysis, we need to convert numeric to factor and check for missing data.
+
+```{r}
+birthweight_raw = 
+  read.csv("data/birthweight.csv") %>% 
+  janitor::clean_names()
+```
 
