@@ -134,6 +134,17 @@ step(mult_fit, direction = 'backward')
 From the result shown above, I'm going to select `bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken` as hypothesis testing variables and propose a regression model for birthweight based on these variables.
 
 ```{r}
+bwt_model =
+  lm(formula = bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, data = birthweight_raw) %>% 
+  broom::tidy() %>% 
+  knitr::kable(digits = 3)
+
+bwt_model
+```
+
+After getting the fitted model for birthweight, we can make a plot of model residuals against fitted values.
+
+```{r}
 
 ```
 
