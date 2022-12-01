@@ -122,3 +122,18 @@ birthweight_raw =
   drop_na()
 ```
 
+Before making a regression model for birthweight, we need to decide which variables are necessay and important for model hypothesis testing. We can first fit regression using all predictors and select variables using `backward` elimination to help us make valid selections.
+
+```{r}
+mult_fit = 
+  lm(bwt ~., data = birthweight_raw)
+
+step(mult_fit, direction = 'backward')
+```
+
+From the result shown above, I'm going to select `bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken` as hypothesis testing variables and propose a regression model for birthweight based on these variables.
+
+```{r}
+
+```
+
