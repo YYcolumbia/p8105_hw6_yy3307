@@ -15,19 +15,26 @@ library(mgcv)
 
 ## Problem 2
 
-First we need to import and clean the `homicide` dataset. Then I'm going to `mutate` a `city_state` variable to combine `city` and `state`, with a binary variable indicating whether the homicide is solved. The next step is to `filter` out multiple `city_state` which are not valid under our condition.
+First we need to import and clean the `homicide` dataset. Then I'm going to create a `city_state` variable as combination of `city` and `state`, with a binary variable indicating whether the homicide is solved. `victim_age` will be `mutate` as numeric expression. Dallas, TX; Phoenix, AZ; Kansas City, MO; Tulsa, AL are being omitted and we only focus our analysis on those for whom `victim_race` is `white` or `black`.
 
-```{r}
+```{r, warning = FALSE}
 homicide_raw = 
   read.csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv") %>% 
   janitor::clean_names() %>% 
-  mutate(city_state = str_c(city, ", ", state)) %>% 
+  mutate(
+    city_state = str_c(city, ", ", state),
+    solve_binary = as.numeric(
+      ifelse(disposition == "Closed by arrest", 1, 0)
+    ),
+    victim_age = as.numeric(victim_age)
+  ) %>% 
   filter(
     city_state != "Dallas, TX", 
     city_state != "Phoenix, AZ", 
     city_state != "Kansas City, MO", 
     city_state != "Tulsa, AL"
-  )
+  ) %>% 
+  filter(victim_race %in% c("White", "Black"))
 ```
 
 
