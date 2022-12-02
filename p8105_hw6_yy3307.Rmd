@@ -7,6 +7,7 @@ date: "2022-11-29"
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(modelr)
+library(mgcv)
 ```
 
 ## Problem 1
@@ -73,6 +74,8 @@ cities_logistic =
     CI_lower = exp(estimate - 1.96 * std.error)
   ) %>% 
   select(city_state, term, OR, CI_lower, CI_upper)
+
+cities_logistic
 ```
 
 The last step is to plot the estimated ORs and CIs for each city. Confidence intervals are shown as `errorbar` in the plot.
@@ -97,6 +100,8 @@ city_plot =
 city_plot
 ```
 
+_**Comments:**_
+
 From the plot we can analyze that the range for City OR Solving Homicides Comparing Male Victims to Female Victims is from about 0.25 to 1.75. Generally odds ratio for most of the cities falls below 1. New York, NY has the lowest odds ratio and Albuquerque, NM has the highest odds ratio. We can also tell that the confidence interval for each city does not follows a specific increasing trend, some cities may have low OR with long CI and some may have high OR with shortter CI.
 
 ## Problem 3
@@ -107,7 +112,6 @@ The first step is to load and clean the data for regression analysis, we need to
 birthweight_raw =
   read_csv("data/birthweight.csv") %>% 
   janitor::clean_names() %>%
-  drop_na() %>% 
   mutate(
     babysex = as.factor(babysex),
     frace = as.factor(frace),
@@ -116,8 +120,12 @@ birthweight_raw =
   ) %>% 
   select(bwt, everything())
 
+sum(is.na(birthweight_raw))
+
 birthweight_raw
 ```
+
+From the counting `NA`s result shown above we can conclude that there is actually no missing values in this dataset. However, we can observe that almost for all data in `parity`, `pnumlbw`, `pnumgsa` are 0 and these variables are not factor variables. We might consider if there was some missing or input error in these variables with a large sample size even these events are rare to happen.
 
 Before making a regression model for birthweight, we need to decide which variables are necessay and important for model hypothesis testing. We can first fit regression using all predictors and select variables using `backward` elimination to help us make valid selections.
 
@@ -138,7 +146,7 @@ model_final %>%
   broom::tidy()
 ```
 
-After getting the fitted model for birthweight, we can make a plot of model residuals against fitted values.
+After getting the fitted model for birthweight, we can make a plot of model residuals against fitted values. First, we can use `add_residuals` and `add_predictions` to find these values, then we just need to express them as `grom_point`.
 
 ```{r}
 birthweight_raw %>% 
@@ -152,5 +160,15 @@ birthweight_raw %>%
     y = "Residuals"
   ) +
   theme(plot.title = element_text(hjust = 0.5))
+```
+
+Compare the model to two others:
+
+One using length at birth and gestational age as predictors (main effects only)
+
+One using head circumference, length, sex, and all interactions (including the three-way interaction) between these
+
+```{r}
+
 ```
 
