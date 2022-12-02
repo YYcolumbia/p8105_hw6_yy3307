@@ -10,9 +10,6 @@ library(modelr)
 library(mgcv)
 ```
 
-## Problem 1
-
-
 ## Problem 2
 
 First we need to import and clean the `homicide` dataset. Then I'm going to create a `city_state` variable as combination of `city` and `state`, with a binary variable indicating whether the homicide is solved. `victim_age` will be `mutate` as numeric expression. Dallas, TX; Phoenix, AZ; Kansas City, MO; Tulsa, AL are being omitted and we only focus our analysis on those for whom `victim_race` is `white` or `black`.
@@ -222,3 +219,4 @@ cv_df %>%
   theme(plot.title = element_text(hjust = .5))
 ```
 
+From the violin plot shown above, we can see that our origin model has the lowest RMSE, the second comparison model using head circumference, length, sex, and all interactions as predictors has medium RMSE, and first comparison model using length at birth and gestational age as predictors has highest RMSE. Also, the origin model has similar shape distribution as the second comparison model.
